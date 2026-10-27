@@ -37,7 +37,7 @@ class MembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
         fields = ['id', 'client', 'client_name', 'type',
-                  'start_date', 'end_date', 'price', 'status']
+                  'start_date', 'end_date', 'price']
 
     def validate_price(self, value):
         if value < 0:
@@ -61,20 +61,4 @@ class WorkoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workout
         fields = ['id', 'client', 'client_name', 'trainer', 'trainer_name',
-                  'membership', 'workout_date', 'status']
-
-    def validate(self, data):
-        membership = data.get('membership')
-        workout_date = data.get('workout_date')
-
-        if membership and workout_date:
-            if membership.status != 'active':
-                raise serializers.ValidationError(
-                    {"membership": "Абонемент не активен."}
-                )
-            wd = workout_date.date()
-            if not (membership.start_date <= wd <= membership.end_date):
-                raise serializers.ValidationError(
-                    {"workout_date": "Дата тренировки вне периода абонемента."}
-                )
-        return data
+                  'workout_date', 'status']

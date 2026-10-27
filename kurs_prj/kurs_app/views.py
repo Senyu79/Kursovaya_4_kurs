@@ -33,7 +33,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
     queryset = Membership.objects.all()
     serializer_class = MembershipSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['status', 'type']
+    filterset_fields = ['type'] 
 
 
 class WorkoutViewSet(viewsets.ModelViewSet):

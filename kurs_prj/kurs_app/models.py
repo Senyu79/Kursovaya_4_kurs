@@ -13,7 +13,7 @@ class Trainer(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True)
-    phone = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    phone = models.CharField(max_length=12, unique=True, blank=True, null=True)
     email = models.EmailField(unique=True, blank=True, null=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
 
@@ -25,7 +25,7 @@ class Client(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True)
-    phone = models.CharField(max_length=20, unique=True)
+    phone = models.CharField(max_length=12, unique=True)
     email = models.EmailField(unique=True, blank=True, null=True)
 
     def __str__(self):
@@ -37,7 +37,6 @@ class Membership(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -49,7 +48,6 @@ class Workout(models.Model):
     status = models.CharField(max_length=20)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE)
-    membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.workout_date} — {self.client}'
