@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Position, Trainer, Client, Membership, Workout
+from .models import Position, Trainer, Client, MembershipType, Membership, Workout
 
 
 class PositionSerializer(serializers.ModelSerializer):
@@ -31,18 +31,21 @@ class ClientSerializer(serializers.ModelSerializer):
                   'phone', 'email', 'full_name']
 
 
+class MembershipTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MembershipType
+        fields = '__all__'
+
+
 class MembershipSerializer(serializers.ModelSerializer):
     client_name = serializers.CharField(source='client.__str__', read_only=True)
+    membership_type = serializers.CharField(source='membership.type', read_only=True)
+    membership_price = serializers.CharField(source='membership.price', read_only=True)
 
     class Meta:
         model = Membership
-        fields = ['id', 'client', 'client_name', 'type',
-                  'start_date', 'end_date', 'price', 'status']
-
-    def validate_price(self, value):
-        if value < 0:
-            raise serializers.ValidationError("Цена не может быть отрицательной.")
-        return value
+        fields = ['id', 'client', 'client_name', 'membership', 'membership_type', 
+                  'membership_price', 'start_date', 'end_date']
 
     def validate(self, data):
         start = data.get('start_date')
@@ -61,20 +64,13 @@ class WorkoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workout
         fields = ['id', 'client', 'client_name', 'trainer', 'trainer_name',
-                  'membership', 'workout_date', 'status']
+                  'workout_start', 'workout_end']
 
     def validate(self, data):
-        membership = data.get('membership')
-        workout_date = data.get('workout_date')
-
-        if membership and workout_date:
-            if membership.status != 'active':
-                raise serializers.ValidationError(
-                    {"membership": "Абонемент не активен."}
-                )
-            wd = workout_date.date()
-            if not (membership.start_date <= wd <= membership.end_date):
-                raise serializers.ValidationError(
-                    {"workout_date": "Дата тренировки вне периода абонемента."}
-                )
+        start = data.get('workout_start')
+        end = data.get('workout_end')
+        if start and end and end <= start:
+            raise serializers.ValidationError(
+                {"workout_end": "Время окончания должно быть позже времени начала."}
+            )
         return data

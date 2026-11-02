@@ -2,10 +2,10 @@ from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Position, Trainer, Client, Membership, Workout
+from .models import Position, Trainer, Client, MembershipType, Membership, Workout
 from .serializers import (
     PositionSerializer, TrainerSerializer, ClientSerializer,
-    MembershipSerializer, WorkoutSerializer,
+    MembershipTypeSerializer, MembershipSerializer, WorkoutSerializer,
 )
 
 
@@ -29,15 +29,20 @@ class ClientViewSet(viewsets.ModelViewSet):
     search_fields = ['first_name', 'last_name', 'phone']
 
 
+class MembershipTypeViewSet(viewsets.ModelViewSet):
+    queryset = MembershipType.objects.all()
+    serializer_class = MembershipTypeSerializer
+
+
 class MembershipViewSet(viewsets.ModelViewSet):
     queryset = Membership.objects.all()
     serializer_class = MembershipSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['status', 'type']
+    filterset_fields = ['membership', 'client']
 
 
 class WorkoutViewSet(viewsets.ModelViewSet):
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['status', 'trainer', 'client']
+    filterset_fields = ['trainer', 'client']
