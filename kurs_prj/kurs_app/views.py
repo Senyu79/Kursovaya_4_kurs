@@ -38,7 +38,7 @@ class MembershipViewSet(viewsets.ModelViewSet):
     queryset = Membership.objects.all()
     serializer_class = MembershipSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['membership', 'client']
+    filterset_fields = ['membership', 'client'] # Оставляем новую версию (связь с таблицей типов)
 
 
 class WorkoutViewSet(viewsets.ModelViewSet):
