@@ -19,7 +19,7 @@ class TrainerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trainer
         fields = ['id', 'first_name', 'last_name', 'middle_name',
-                  'phone', 'email', 'position', 'position_name']
+                  'phone', 'email', 'position', 'position_name', 'photo']
 
 
 class ClientSerializer(serializers.ModelSerializer):

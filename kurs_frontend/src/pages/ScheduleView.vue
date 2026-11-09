@@ -1,49 +1,30 @@
 <template>
-  <div>
-    <div class="schedule-header">
-      <h1>Расписание тренировок</h1>
-      <p>Будь в форме — следи за своим графиком</p>
-    </div>
+  <div class="container schedule-page">
+    <h1 class="title-schedule">РАСПИСАНИЕ ТРЕНИРОВОК</h1>
     
-    <!-- Скелетоны -->
-    <div v-if="loading" class="schedule-list">
-      <div v-for="i in 3" :key="i" class="schedule-item skeleton-item"></div>
+    <div v-if="loading" class="loading">Загрузка...</div>
+    
+    <div v-else-if="workouts.length === 0" class="no-results">
+      <h2>Пока нет запланированных тренировок</h2>
+      <p>Запишитесь на тариф, чтобы составить расписание.</p>
     </div>
 
-    <!-- Пусто -->
-    <div v-else-if="workouts.length === 0" class="empty-state">
-      <div class="empty-icon">📅</div>
-      <h3>Пока нет запланированных тренировок</h3>
-      <p>Запишитесь на абонемент, и мы составим для вас график.</p>
-    </div>
-
-    <!-- Список -->
     <div v-else class="schedule-list">
-      <div v-for="w in workouts" :key="w.id" class="schedule-item">
-        
-        <div class="date-box">
-          <div class="day">{{ new Date(w.workout_start).getDate() }}</div>
-          <div class="month">{{ getMonth(new Date(w.workout_start)) }}</div>
+      <div v-for="w in workouts" :key="w.id" class="schedule-card">
+        <div class="date-block">
+          <span class="day">{{ new Date(w.workout_start).getDate() }}</span>
+          <span class="month">{{ getMonth(new Date(w.workout_start)) }}</span>
         </div>
         
-        <div class="info">
-          <div class="trainer">
-            <span class="label">Тренер</span>
-            <h3>{{ w.trainer_name }}</h3>
-          </div>
-          <div class="client">
-            <span class="label">Клиент</span>
-            <p>{{ w.client_name }}</p>
-          </div>
+        <div class="info-block">
+          <h3>Тренировка с {{ w.trainer_name }}</h3>
+          <p>Клиент: <b>{{ w.client_name }}</b></p>
         </div>
         
-        <div class="time-box">
-          <div class="time">
-            {{ formatTime(w.workout_start) }} <span>—</span> {{ formatTime(w.workout_end) }}
-          </div>
-          <div class="status">Запланирована</div>
+        <div class="time-block-schedule">
+          <span class="time-text">{{ formatTime(w.workout_start) }} — {{ formatTime(w.workout_end) }}</span>
+          <span class="status-badge">Запланирована</span>
         </div>
-        
       </div>
     </div>
   </div>
@@ -69,59 +50,44 @@ async function load() {
 }
 
 function getMonth(date) {
-  const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
+  const months = ['ЯНВ', 'ФЕВ', 'МАР', 'АПР', 'МАЙ', 'ИЮН', 'ИЮЛ', 'АВГ', 'СЕН', 'ОКТ', 'НОЯ', 'ДЕК']
   return months[date.getMonth()]
 }
 
 function formatTime(dateString) {
-  const date = new Date(dateString)
-  return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+  return new Date(dateString).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
 }
 
 onMounted(load)
 </script>
 
 <style scoped>
-.schedule-header { text-align: center; margin-bottom: 50px; }
-.schedule-header h1 { font-size: 42px; color: #0f172a; font-weight: 800; margin-bottom: 10px; }
-.schedule-header p { color: #64748b; font-size: 18px; }
+.schedule-page { margin-top: 50px; }
+.title-schedule { text-align: center; font-size: 45px; margin-bottom: 50px; font-weight: 700; }
+.loading { text-align: center; font-size: 20px; margin: 50px 0; }
 
 .schedule-list { display: flex; flex-direction: column; gap: 20px; max-width: 900px; margin: 0 auto; }
-
-.schedule-item { 
-  background: white; padding: 25px 30px; border-radius: 16px; display: flex; align-items: center; 
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-left: 6px solid #ef4444; transition: transform 0.3s;
+.schedule-card { 
+  display: flex; align-items: center; background: #F3F4F7; 
+  border-radius: 20px; padding: 20px 30px; gap: 30px; transition: transform 0.3s;
 }
-.schedule-item:hover { transform: translateX(10px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+.schedule-card:hover { transform: translateX(10px); background: #EBECF0; }
 
-.date-box { 
-  background: #0f172a; color: white; padding: 15px; border-radius: 12px; 
-  text-align: center; margin-right: 30px; min-width: 80px; 
-  box-shadow: 0 4px 10px rgba(15,23,42,0.2);
+.date-block { 
+  background: #B7C0F9; color: #000; padding: 15px 20px; border-radius: 15px; 
+  text-align: center; min-width: 90px; display: flex; flex-direction: column;
 }
-.day { font-size: 28px; font-weight: 800; line-height: 1; }
-.month { font-size: 12px; text-transform: uppercase; color: #cbd5e1; margin-top: 5px; letter-spacing: 1px; }
+.day { font-size: 32px; font-weight: 700; line-height: 1; }
+.month { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-.info { flex: 1; display: flex; gap: 40px; align-items: center; }
-.label { font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; display: block; }
-.info h3 { margin: 0; color: #0f172a; font-size: 18px; font-weight: 700; }
-.info p { margin: 0; color: #475569; font-size: 16px; }
+.info-block { flex: 1; }
+.info-block h3 { font-size: 22px; margin-bottom: 5px; color: #202439; }
+.info-block p { color: #666; font-size: 16px; margin: 0; }
 
-.time-box { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-.time { font-size: 20px; font-weight: 800; color: #0f172a; }
-.time span { color: #cbd5e1; font-weight: 400; margin: 0 5px; }
-.status { 
-  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; 
-  background: #dcfce7; color: #166534; letter-spacing: 0.5px;
-}
+.time-block-schedule { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.time-text { font-size: 20px; font-weight: 700; color: #0CA1B1; }
+.status-badge { background: #202439; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; }
 
-/* Пустое состояние */
-.empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 20px; border: 2px dashed #cbd5e1; }
-.empty-icon { font-size: 60px; margin-bottom: 20px; }
-.empty-state h3 { font-size: 24px; color: #0f172a; margin-bottom: 10px; }
-.empty-state p { color: #64748b; }
-
-/* Скелетон */
-.skeleton-item { height: 100px; background: #e2e8f0; animation: pulse 1.5s infinite; border-left-color: #cbd5e1; }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+.no-results { text-align: center; padding: 60px 20px; }
+.no-results h2 { color: #666; margin-bottom: 15px; }
 </style>

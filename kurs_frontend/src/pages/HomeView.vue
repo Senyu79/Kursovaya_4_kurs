@@ -1,78 +1,69 @@
 <template>
-  <div>
-    <!-- Hero-секция -->
-    <div class="hero">
-      <h1>ТВОЙ ТЕЛО — <br><span>ТВОЙ ПРОЕКТ</span></h1>
-      <p>Присоединяйся к лучшему фитнес-клубу. Первая тренировка — бесплатно.</p>
-      <button class="btn hero-btn" @click="scrollToForm">Выбрать абонемент</button>
-    </div>
-
-    <!-- Карточки абонементов -->
-    <div class="section-title">
-      <h2>Наши абонементы</h2>
-      <div class="line"></div>
-    </div>
-
-    <div class="cards-container">
-      <!-- Скелетоны (пока грузится) -->
-      <div v-if="loading" class="card skeleton" v-for="i in 3" :key="i">
-        <div class="sk-title"></div>
-        <div class="sk-price"></div>
-        <div class="sk-text"></div>
-      </div>
-
-      <!-- Реальные карточки -->
-      <div v-else v-for="t in types" :key="t.id" class="card" :class="{ 'popular': t.type.toLowerCase().includes('год') }">
-        <div class="card-icon">💪</div>
-        <h3>{{ t.type }}</h3>
-        <div class="price">{{ t.price }} <span>₽</span></div>
-        <ul class="features">
-          <li>✓ Доступ в зал 24/7</li>
-          <li>✓ Раздевалка и душ</li>
-          <li v-if="t.type.toLowerCase().includes('год')">✓ 3 персональные тренировки</li>
-        </ul>
-        <button class="btn card-btn" @click="selectType(t.id)">Выбрать</button>
-        <div v-if="t.type.toLowerCase().includes('год')" class="badge">Хит продаж</div>
-      </div>
-    </div>
-
-    <!-- Форма -->
-    <div class="form-wrapper" id="form-anchor">
-      <div class="form-info">
-        <h2>Готов начать?</h2>
-        <p>Оставь заявку, и наш менеджер свяжется с тобой в течение 15 минут для подтверждения.</p>
-        <ul>
-          <li>📍 г. Москва, ул. Спортивная, 1</li>
-          <li>📞 +7 (999) 123-45-67</li>
-          <li>🕒 Круглосуточно</li>
-        </ul>
-      </div>
+  <div class="container">
+    <section class="trafic-main">
+      <h2 class="title-trafic">НАШИ ТАРИФЫ</h2>
       
-      <form @submit.prevent="submitForm" class="signup-form">
-        <h3>Оставить заявку</h3>
-        
-        <div class="input-group">
-          <input v-model="form.first_name" placeholder="Имя" required />
-          <input v-model="form.last_name" placeholder="Фамилия" required />
+      <div v-if="loading" class="loading">Загрузка тарифов...</div>
+
+      <div v-else class="trafic-list">
+        <div 
+          v-for="(t, index) in types" 
+          :key="t.id" 
+          :class="['trafic-card', getCardClass(index)]"
+        >
+          <div class="trafic-head">
+            <h2 class="title-item">{{ t.type.toUpperCase() }}</h2>
+            <div :class="['kvadrat', getSquareClass(index)]">
+               <span class="atom">⚡</span>
+            </div>
+          </div>
+          
+          <div class="information">
+            <ul class="information-list">
+              <li class="information-item" v-for="feature in getFeatures(index)" :key="feature.text">
+                <span :class="['check-icon', feature.included ? 'check' : 'cross']">
+                  {{ feature.included ? '✓' : '✕' }}
+                </span>
+                <p :class="['information-text', { 'text-muted': !feature.included }]">
+                  {{ feature.text }}
+                </p>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="card-bottom">
+            <h3 class="price-info">{{ t.price }}₽ <span>В месяц</span></h3>
+          </div>
         </div>
-        
-        <input v-model="form.phone" placeholder="Телефон (89991234567)" maxlength="12" required />
-        <input v-model="form.email" type="email" placeholder="Email (необязательно)" />
-        
-        <select v-model="form.membership_id" required>
-          <option disabled value="">Выберите абонемент</option>
-          <option v-for="t in types" :key="t.id" :value="t.id">
-            {{ t.type }} — {{ t.price }} ₽
-          </option>
-        </select>
-        
-        <button type="submit" class="btn" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Отправка...' : 'Отправить заявку' }}
-        </button>
-        
+      </div>
+
+      <div class="form-wrapper" id="form-anchor">
+        <h2>Вступить в клуб</h2>
+        <form @submit.prevent="submitForm" class="signup-form">
+          <div class="input-row">
+            <input v-model="form.first_name" placeholder="Имя" required />
+            <input v-model="form.last_name" placeholder="Фамилия" required />
+          </div>
+          
+          <input v-model="form.middle_name" placeholder="Отчество (необязательно)" />
+          
+          <input v-model="form.phone" placeholder="Телефон (89991234567)" maxlength="12" required />
+          <input v-model="form.email" type="email" placeholder="Email (необязательно)" />
+          
+          <select v-model="form.membership_id" required>
+            <option disabled value="">Выберите абонемент</option>
+            <option v-for="t in types" :key="t.id" :value="t.id">
+              {{ t.type }} ({{ t.price }} ₽)
+            </option>
+          </select>
+          
+          <button type="submit" class="submit-btn" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Отправка...' : 'Вступить в клуб' }}
+          </button>
+        </form>
         <p v-if="message" :class="['message', messageType]">{{ message }}</p>
-      </form>
-    </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -83,7 +74,14 @@ import { clientsApi, membershipsApi, membershipTypesApi } from '../api/index.js'
 const types = ref([])
 const loading = ref(true)
 const isSubmitting = ref(false)
-const form = ref({ first_name: '', last_name: '', phone: '', email: '', membership_id: '' })
+const form = ref({ 
+  first_name: '', 
+  last_name: '', 
+  middle_name: '', 
+  phone: '', 
+  email: '', 
+  membership_id: '' 
+})
 const message = ref('')
 const messageType = ref('success')
 
@@ -98,13 +96,29 @@ async function loadTypes() {
   }
 }
 
-function scrollToForm() {
-  document.getElementById('form-anchor').scrollIntoView({ behavior: 'smooth' })
+function getCardClass(index) {
+  const classes = ['trafic-light', 'trafic-infinity', 'trafic-smart']
+  return classes[index % 3]
+}
+function getSquareClass(index) {
+  const classes = ['kvadrat-1', 'kvadrat-2', 'kvadrat-3']
+  return classes[index % 3]
 }
 
-function selectType(id) {
-  form.value.membership_id = id
-  scrollToForm()
+function getFeatures(index) {
+  const base = [
+    { text: 'безлимитный доступ в клуб', included: true },
+    { text: 'тренажерный зал', included: true },
+    { text: 'анализ состава тела InBody', included: true },
+    { text: 'мобильное приложение', included: true },
+  ]
+  const extra = [
+    { text: 'групповые занятия', included: index > 0 },
+    { text: 'SPA-зона', included: index > 1 },
+    { text: 'доступ во все клубы сети', included: index > 1 },
+    { text: 'доступ для друзей', included: false },
+  ]
+  return [...base, ...extra]
 }
 
 async function submitForm() {
@@ -114,6 +128,7 @@ async function submitForm() {
     const clientRes = await clientsApi.create({
       first_name: form.value.first_name,
       last_name: form.value.last_name,
+      middle_name: form.value.middle_name,
       phone: form.value.phone,
       email: form.value.email || null
     })
@@ -130,8 +145,15 @@ async function submitForm() {
     })
 
     messageType.value = 'success'
-    message.value = 'Заявка отправлена! Ждем вас в зале.'
-    form.value = { first_name: '', last_name: '', phone: '', email: '', membership_id: '' }
+    message.value = 'Заявка отправлена! Мы свяжемся с вами.'
+    form.value = { 
+      first_name: '', 
+      last_name: '', 
+      middle_name: '', 
+      phone: '', 
+      email: '', 
+      membership_id: '' 
+    }
   } catch (e) {
     messageType.value = 'error'
     message.value = 'Ошибка. Возможно, этот телефон уже зарегистрирован.'
@@ -144,78 +166,54 @@ onMounted(loadTypes)
 </script>
 
 <style scoped>
-/* Hero */
-.hero { text-align: center; padding: 40px 0 80px; }
-.hero h1 { font-size: 56px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 20px; letter-spacing: -1px; }
-.hero h1 span { color: #ef4444; }
-.hero p { font-size: 18px; color: #64748b; max-width: 500px; margin: 0 auto 30px; }
+.title-trafic { font-size: 45px; text-align: center; margin: 50px 0; font-weight: 700; }
+.loading { text-align: center; font-size: 20px; margin: 50px 0; color: #666; }
 
-/* Заголовки секций */
-.section-title { text-align: center; margin-bottom: 50px; }
-.section-title h2 { font-size: 32px; color: #0f172a; font-weight: 700; margin-bottom: 15px; }
-.line { width: 60px; height: 4px; background: #ef4444; margin: 0 auto; border-radius: 2px; }
+.trafic-list { display: flex; justify-content: space-evenly; gap: 20px; flex-wrap: wrap; }
 
-/* Карточки */
-.cards-container { display: flex; gap: 30px; justify-content: center; margin-bottom: 80px; flex-wrap: wrap; }
-.card { 
-  background: white; border-radius: 16px; padding: 40px 30px; text-align: center; width: 320px; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: all 0.3s ease; position: relative;
-  border: 1px solid #e2e8f0; display: flex; flex-direction: column;
+.trafic-card {
+  background-color: #F3F4F7; width: 400px; border-radius: 30px; 
+  padding-bottom: 30px; display: flex; flex-direction: column;
 }
-.card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-color: #ef4444; }
-.card-icon { font-size: 40px; margin-bottom: 15px; }
-.card h3 { font-size: 22px; color: #0f172a; margin-bottom: 15px; text-transform: capitalize; }
-.price { font-size: 42px; font-weight: 800; color: #0f172a; margin-bottom: 25px; }
-.price span { font-size: 24px; color: #64748b; font-weight: 500; }
-.features { list-style: none; text-align: left; margin-bottom: 30px; flex: 1; }
-.features li { padding: 8px 0; color: #475569; font-size: 14px; border-bottom: 1px dashed #e2e8f0; }
-.card-btn { width: 100%; margin-top: auto; }
+.trafic-light { min-height: 680px; color: #0CA1B1; }
+.trafic-infinity { min-height: 710px; color: #202439; transform: scale(1.02); }
+.trafic-smart { min-height: 680px; color: #ED692A; }
 
-/* Популярный тариф */
-.popular { border: 2px solid #ef4444; transform: scale(1.05); }
-.popular:hover { transform: scale(1.05) translateY(-10px); }
-.badge { 
-  position: absolute; top: -15px; left: 50%; transform: translateX(-50%); 
-  background: #ef4444; color: white; padding: 6px 16px; border-radius: 20px; 
-  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-}
+.trafic-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.title-item { margin: 30px; font-size: 32px; font-weight: 700; }
+.kvadrat { width: 100px; height: 100px; border-radius: 20px; margin-right: 30px; position: relative; top: -20px; display: flex; align-items: center; justify-content: center; }
+.kvadrat-1 { background-color: #D6F1F0; }
+.kvadrat-2 { background-color: #DDE1EF; }
+.kvadrat-3 { background-color: #FFEBD6; }
+.atom { font-size: 40px; }
 
-/* Скелетоны */
-.skeleton { animation: pulse 1.5s infinite; }
-.sk-title, .sk-price, .sk-text { background: #e2e8f0; border-radius: 4px; margin: 0 auto 20px; }
-.sk-title { width: 60%; height: 24px; }
-.sk-price { width: 40%; height: 40px; }
-.sk-text { width: 80%; height: 16px; }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+.information { margin-bottom: 20px; flex-grow: 1; }
+.information-list { padding: 0 30px; }
+.information-item { display: flex; font-size: 15px; align-items: flex-start; margin-bottom: 15px; }
+.check-icon { font-weight: bold; margin-right: 10px; font-size: 18px; }
+.check { color: #10b981; }
+.cross { color: #ef4444; }
+.information-text { color: #000; margin: 0; }
+.text-muted { color: #999; text-decoration: line-through; }
 
-/* Форма */
-.form-wrapper { 
-  display: flex; background: #0f172a; border-radius: 20px; overflow: hidden; 
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-width: 1000px; margin: 0 auto;
-}
-.form-info { flex: 1; padding: 60px; background: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover; position: relative; }
-.form-info::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(15,23,42,0.9), rgba(15,23,42,0.7)); }
-.form-info h2, .form-info p, .form-info ul { position: relative; z-index: 1; color: white; }
-.form-info h2 { font-size: 32px; margin-bottom: 20px; }
-.form-info p { color: #cbd5e1; margin-bottom: 30px; line-height: 1.6; }
-.form-info ul { list-style: none; }
-.form-info li { margin-bottom: 15px; color: #e2e8f0; font-size: 15px; }
+.card-bottom { text-align: center; margin-top: auto; padding-top: 20px; }
+.price-info { font-size: 32px; font-weight: 800; margin-bottom: 0; }
+.price-info span { font-size: 16px; font-weight: 400; color: #666; }
 
-.signup-form { flex: 1; padding: 60px; background: white; display: flex; flex-direction: column; gap: 20px; }
-.signup-form h3 { font-size: 24px; color: #0f172a; margin-bottom: 10px; }
-.input-group { display: flex; gap: 15px; }
+.form-wrapper { max-width: 600px; margin: 80px auto 0; background: #F3F4F7; padding: 40px; border-radius: 30px; text-align: center; }
+.form-wrapper h2 { font-size: 30px; margin-bottom: 30px; }
+.signup-form { display: flex; flex-direction: column; gap: 15px; }
+.input-row { display: flex; gap: 15px; }
 .signup-form input, .signup-form select { 
-  width: 100%; padding: 16px; border: 1px solid #cbd5e1; border-radius: 8px; 
-  font-size: 15px; font-family: inherit; transition: all 0.3s; background: #f8fafc;
+  padding: 15px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; font-family: inherit; outline: none; 
 }
-.signup-form input:focus, .signup-form select:focus { 
-  outline: none; border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); background: white;
+.signup-form input:focus, .signup-form select:focus { border-color: #0CA1B1; }
+.submit-btn { 
+  background-color: #0CA1B1; color: white; border: none; padding: 15px; 
+  border-radius: 50px; font-size: 18px; cursor: pointer; font-weight: 600; transition: 0.3s;
 }
-.signup-form button { margin-top: 10px; }
-.signup-form button:disabled { opacity: 0.7; cursor: not-allowed; }
-
-/* Сообщения */
-.message { padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: 500; }
-.message.success { background: #dcfce7; color: #166534; }
-.message.error { background: #fee2e2; color: #991b1b; }
+.submit-btn:hover { background-color: #098593; }
+.message { margin-top: 20px; font-weight: 600; }
+.message.success { color: #10b981; }
+.message.error { color: #ef4444; }
 </style>

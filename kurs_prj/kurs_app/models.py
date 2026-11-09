@@ -16,6 +16,7 @@ class Trainer(models.Model):
     phone = models.CharField(max_length=12, unique=True, blank=True, null=True)
     email = models.EmailField(unique=True, blank=True, null=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='trainers/', blank=True, null=True)
 
     def __str__(self):
         return f'{self.last_name} {self.first_name}'

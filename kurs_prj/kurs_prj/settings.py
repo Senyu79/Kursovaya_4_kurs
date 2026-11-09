@@ -6,6 +6,8 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import os
+
 SECRET_KEY = 'django-insecure-yqg18+t(@t+%b+tn#xlbv=uj3r8lq4&tw3)j8m^+eo+v6no7y&'
 
 DEBUG = True
@@ -100,5 +102,8 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
     ],
 }
+
+MEDIA_URL = '/img/'
+MEDIA_ROOT = BASE_DIR / 'img'
 
 CORS_ALLOW_ALL_ORIGINS = True

@@ -23,4 +23,8 @@ export const workoutsApi = {
   getAll: () => api.get('/workouts/'),
 }
 
+export const trainersApi = {
+  getAll: () => api.get('/trainers/'),
+}
+
 export default api
