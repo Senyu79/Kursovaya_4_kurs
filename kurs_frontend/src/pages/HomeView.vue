@@ -14,7 +14,7 @@
           <div class="trafic-head">
             <h2 class="title-item">{{ t.type.toUpperCase() }}</h2>
             <div :class="['kvadrat', getSquareClass(index)]">
-               <span class="atom">⚡</span>
+               <div class="geometric-shape"></div>
             </div>
           </div>
           
@@ -46,7 +46,6 @@
           </div>
           
           <input v-model="form.middle_name" placeholder="Отчество (необязательно)" />
-          
           <input v-model="form.phone" placeholder="Телефон (89991234567)" maxlength="12" required />
           <input v-model="form.email" type="email" placeholder="Email (необязательно)" />
           
@@ -74,14 +73,7 @@ import { clientsApi, membershipsApi, membershipTypesApi } from '../api/index.js'
 const types = ref([])
 const loading = ref(true)
 const isSubmitting = ref(false)
-const form = ref({ 
-  first_name: '', 
-  last_name: '', 
-  middle_name: '', 
-  phone: '', 
-  email: '', 
-  membership_id: '' 
-})
+const form = ref({ first_name: '', last_name: '', middle_name: '', phone: '', email: '', membership_id: '' })
 const message = ref('')
 const messageType = ref('success')
 
@@ -146,14 +138,7 @@ async function submitForm() {
 
     messageType.value = 'success'
     message.value = 'Заявка отправлена! Мы свяжемся с вами.'
-    form.value = { 
-      first_name: '', 
-      last_name: '', 
-      middle_name: '', 
-      phone: '', 
-      email: '', 
-      membership_id: '' 
-    }
+    form.value = { first_name: '', last_name: '', middle_name: '', phone: '', email: '', membership_id: '' }
   } catch (e) {
     messageType.value = 'error'
     message.value = 'Ошибка. Возможно, этот телефон уже зарегистрирован.'
@@ -166,54 +151,72 @@ onMounted(loadTypes)
 </script>
 
 <style scoped>
-.title-trafic { font-size: 45px; text-align: center; margin: 50px 0; font-weight: 700; }
-.loading { text-align: center; font-size: 20px; margin: 50px 0; color: #666; }
+.title-trafic { font-size: 38px; text-align: center; margin: 50px 0 40px; font-weight: 800; letter-spacing: -0.5px; }
+.loading { text-align: center; font-size: 18px; margin: 40px 0; color: #666; }
 
-.trafic-list { display: flex; justify-content: space-evenly; gap: 20px; flex-wrap: wrap; }
+.trafic-list { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; align-items: stretch; }
 
 .trafic-card {
-  background-color: #F3F4F7; width: 400px; border-radius: 30px; 
-  padding-bottom: 30px; display: flex; flex-direction: column;
+  background-color: #F3F4F7; width: 320px; border-radius: 20px; 
+  padding-bottom: 20px; display: flex; flex-direction: column;
 }
-.trafic-light { min-height: 680px; color: #0CA1B1; }
-.trafic-infinity { min-height: 710px; color: #202439; transform: scale(1.02); }
-.trafic-smart { min-height: 680px; color: #ED692A; }
+.trafic-light { min-height: 520px; color: #0CA1B1; }
+.trafic-infinity { min-height: 550px; color: #202439; transform: scale(1.02); }
+.trafic-smart { min-height: 520px; color: #ED692A; }
 
-.trafic-head { display: flex; justify-content: space-between; align-items: flex-start; }
-.title-item { margin: 30px; font-size: 32px; font-weight: 700; }
-.kvadrat { width: 100px; height: 100px; border-radius: 20px; margin-right: 30px; position: relative; top: -20px; display: flex; align-items: center; justify-content: center; }
+.trafic-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+.title-item { margin: 20px; font-size: 22px; font-weight: 800; }
+.kvadrat { width: 70px; height: 70px; border-radius: 14px; margin-right: 20px; position: relative; top: -10px; display: flex; align-items: center; justify-content: center; }
 .kvadrat-1 { background-color: #D6F1F0; }
 .kvadrat-2 { background-color: #DDE1EF; }
 .kvadrat-3 { background-color: #FFEBD6; }
-.atom { font-size: 40px; }
 
-.information { margin-bottom: 20px; flex-grow: 1; }
-.information-list { padding: 0 30px; }
-.information-item { display: flex; font-size: 15px; align-items: flex-start; margin-bottom: 15px; }
-.check-icon { font-weight: bold; margin-right: 10px; font-size: 18px; }
+.geometric-shape {
+  width: 24px;
+  height: 24px;
+  background-color: currentColor;
+  transform: rotate(45deg);
+  position: relative;
+  border-radius: 4px;
+}
+.geometric-shape::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 12px;
+  height: 12px;
+  background-color: #F3F4F7;
+  border-radius: 2px;
+}
+
+.information { margin-bottom: 15px; flex-grow: 1; }
+.information-list { padding: 0 20px; }
+.information-item { display: flex; font-size: 13px; align-items: flex-start; margin-bottom: 10px; }
+.check-icon { font-weight: bold; margin-right: 8px; font-size: 14px; }
 .check { color: #10b981; }
 .cross { color: #ef4444; }
-.information-text { color: #000; margin: 0; }
+.information-text { color: #000; margin: 0; line-height: 1.4; }
 .text-muted { color: #999; text-decoration: line-through; }
 
-.card-bottom { text-align: center; margin-top: auto; padding-top: 20px; }
-.price-info { font-size: 32px; font-weight: 800; margin-bottom: 0; }
-.price-info span { font-size: 16px; font-weight: 400; color: #666; }
+.card-bottom { text-align: center; margin-top: auto; padding-top: 10px; }
+.price-info { font-size: 26px; font-weight: 800; margin-bottom: 0; }
+.price-info span { font-size: 13px; font-weight: 400; color: #666; }
 
-.form-wrapper { max-width: 600px; margin: 80px auto 0; background: #F3F4F7; padding: 40px; border-radius: 30px; text-align: center; }
-.form-wrapper h2 { font-size: 30px; margin-bottom: 30px; }
-.signup-form { display: flex; flex-direction: column; gap: 15px; }
-.input-row { display: flex; gap: 15px; }
+.form-wrapper { max-width: 500px; margin: 80px auto 0; background: #F3F4F7; padding: 30px; border-radius: 20px; text-align: center; }
+.form-wrapper h2 { font-size: 24px; margin-bottom: 20px; font-weight: 700; }
+.signup-form { display: flex; flex-direction: column; gap: 12px; }
+.input-row { display: flex; gap: 12px; }
 .signup-form input, .signup-form select { 
-  padding: 15px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; font-family: inherit; outline: none; 
+  padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; 
 }
 .signup-form input:focus, .signup-form select:focus { border-color: #0CA1B1; }
 .submit-btn { 
-  background-color: #0CA1B1; color: white; border: none; padding: 15px; 
-  border-radius: 50px; font-size: 18px; cursor: pointer; font-weight: 600; transition: 0.3s;
+  background-color: #0CA1B1; color: white; border: none; padding: 12px; 
+  border-radius: 50px; font-size: 15px; cursor: pointer; font-weight: 700; transition: 0.3s;
 }
 .submit-btn:hover { background-color: #098593; }
-.message { margin-top: 20px; font-weight: 600; }
+.message { margin-top: 15px; font-weight: 600; font-size: 14px; }
 .message.success { color: #10b981; }
 .message.error { color: #ef4444; }
 </style>
